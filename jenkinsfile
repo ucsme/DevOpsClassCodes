@@ -1,0 +1,28 @@
+#! /usr/bin/env groovy
+import java.net.URL
+import hudson.model.*
+
+node{
+    stage('git checksome'){
+        git 'https://github.com/ucsme/DevOpsClassCodes'
+    }
+    stage('compile'){
+        withMaven(maven:'trainingmaven'){
+            sh 'mvn compile'
+        }
+    }
+    stage('test'){
+        try{
+            withMaven(maven:'trainingmaven'){
+                sh 'mvn test'
+            }
+        }finally{
+            junit 'target/surefire-reports/*.xml'
+        }
+    }
+    stage('package'){
+        withMaven(maven:'trainingmaven'){
+            sh 'mvn package'
+        }
+    }
+}
